@@ -82,8 +82,8 @@ $('#current-weather').html(
     <h1 style="background-color:black; color:white; padding:1%">${cityData.name}</h1>
     <h2>${dayjs.unix(cityData.dt).format('dddd, DD MMMM, YYYY')}</h2> Last weather update: ${dayjs.unix(cityData.dt).format('HH:mm')}<br>
     ${weatherIconURL}<br>
-    <h3>${Math.floor(cityData.main.temp)}</h3><br>
-    ${cityData.wind.speed}m/s<br>
+    <h3>${Math.floor(cityData.main.temp)}°C</h3><br>
+    ${Math.floor(cityData.wind.speed*3.6)}km/s<br>
     ${cityData.main.humidity}%<br>
     `);
 
@@ -113,9 +113,9 @@ function DrawForecast(obj) {
         $('#fore-'+x).children(".card-body").html(`${dayjs.unix(obj[x].dt).format('DD MMMM')}<br>
         ${weatherIconURL}<br>
             
-            <h4>${Math.floor(obj[x].main.temp)}</h4><br>
-            ${obj[x].wind.speed}<br>
-            ${obj[x].main.humidity}<br>   
+            <h4>${Math.floor(obj[x].main.temp)}°C</h4><br>
+            ${Math.floor(obj[x].wind.speed*3.6)} km/s<br>
+            ${obj[x].main.humidity}%<br>   
     `);
         console.log("For assurance's sake, drawforecast: "+$('#fore-'+x)+" "+obj[x].dt);
     }
@@ -141,19 +141,24 @@ function DrawForecast(obj) {
 function ProcessCitySubmitResponse(event) {
   // Prevent default action
   event.preventDefault();
-  if (event.target=$("#submitBtn")) {
-  console.log(event);
+  console.log(event.target);.
+  if ($(event.target).attr('id')=='submitBtn') {
+  
   console.log("this is"+$(this));
   console.log(cityTextEl);
   console.log("I got "+cityTextEl.value);
   FetchData('https://api.openweathermap.org/data/2.5/weather?q='+cityTextEl.value+'&units=metric&APPID=e8cc868ce9babe028d23c742ce866cec');
-  }
+  
+}
 } 
 function ProcessListClickResponse(event) {
     // Prevent default action
     event.preventDefault();
-    if (event.target=$(".past-record")) {
     console.log(event.target);
+    //   Since event is delegated, check whether the event caller is actually one of the list items
+    // with the past-record class.
+    if ($(event.target).hasClass('past-record')) {
+   
     console.log("PAST RECORD"+event.target.innerHTML);
     console.log("I got "+event.target.innerHTML);
     FetchData('https://api.openweathermap.org/data/2.5/weather?q='+event.target.innerHTML+'&units=metric&APPID=e8cc868ce9babe028d23c742ce866cec');
@@ -168,7 +173,8 @@ function UpdateRecords() {
         $("<li>"+pastRecord[x]+"</li>").appendTo(cityListEl);
         
     }
-    $(cityListEl).children("li").addClass("list-group-item past-record");
+    $(cityListEl).children("li").addClass("list-group-item past-record bg-dark text-white m-1");
+
 }
 
 function WriteCityList(objList) {
@@ -186,6 +192,7 @@ if (objTemp) {return objTemp;} else {return []}
 
 // Code executes here.
 pastRecord=RetrieveCityList();
+// add basic check for null saves, do a central prompt
 UpdateRecords();
 submitBtnEl.addEventListener("click", ProcessCitySubmitResponse);
 cityListEl.addEventListener("click", ProcessListClickResponse);

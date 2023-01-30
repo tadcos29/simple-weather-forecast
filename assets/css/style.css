@@ -3,7 +3,9 @@
     color:black !important;
 
 }
-
-.pastRecord:hover{
+h1 {
+    color:red;
+}
+.past-record:hover{
     cursor:pointer;
 }
