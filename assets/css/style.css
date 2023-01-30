@@ -1,0 +1,9 @@
+#submitBtn:hover {
+    background-color: white !important;
+    color:black !important;
+
+}
+
+.pastRecord:hover{
+    cursor:pointer;
+}

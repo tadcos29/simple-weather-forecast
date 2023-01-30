@@ -17,10 +17,8 @@ function FetchData(url) {
             console.log(data);
             if (!pastRecord.includes(data.name)) {
             pastRecord.push(data.name);
-            console.log(data.name+"moved into"+pastRecord);
             WriteCityList(pastRecord);
             UpdateRecords();
-            
         }
             DrawPresent(data);
             FetchForecast(data);
@@ -32,7 +30,6 @@ function FetchData(url) {
       });
 
 }
-
 
 function FetchForecast(cityData) {
     console.log(cityData);
@@ -69,7 +66,7 @@ function FetchForecast(cityData) {
                 DrawForecast(objFuture);
             });
         } else {
-          alert('Something went wrong? :'+response.statusText);
+          alert('An error has occurred: '+response.statusText);
           return;
         }
       });
@@ -82,8 +79,8 @@ function DrawPresent(cityData) {
     let weatherIconURL='<img src="http://openweathermap.org/img/wn/'+cityData.weather[0].icon+'@2x.png">';
 $('#current-weather').html(
     `
-    <h2>${cityData.name}(${dayjs.unix(cityData.dt).format('YYYY/MM/DD')})</h2><br>
-    Last weather update:${dayjs.unix(cityData.dt).format('HH:mm')}<br>
+    <h1 style="background-color:black; color:white; padding:1%">${cityData.name}</h1>
+    <h2>${dayjs.unix(cityData.dt).format('dddd, DD MMMM, YYYY')}</h2> Last weather update: ${dayjs.unix(cityData.dt).format('HH:mm')}<br>
     ${weatherIconURL}<br>
     <h3>${Math.floor(cityData.main.temp)}</h3><br>
     ${cityData.wind.speed}m/s<br>
@@ -92,15 +89,30 @@ $('#current-weather').html(
 
 }
 
+// function DrawForecast(obj) {
+//     console.log(obj);
+//     for (x=0;x<5;x++) {
+//         let weatherIconURL='<img src="http://openweathermap.org/img/wn/'+obj[x].weather[0].icon+'@2x.png">';
+//         $('#fore-'+x).html(
+//             `
+//             <h3>${dayjs.unix(obj[x].dt).format('dddd')}</h3><br>
+//             ${weatherIconURL}<br>
+//             (${dayjs.unix(obj[x].dt).format('YYYY/MM/DD')})<br>
+//             <h4>${Math.floor(obj[x].main.temp)}</h4><br>
+//             ${obj[x].wind.speed}<br>
+//             ${obj[x].main.humidity}<br>   
+//     `);
+//         console.log("For assurance's sake, drawforecast: "+$('#fore-'+x)+" "+obj[x].dt);
+//     }
+
 function DrawForecast(obj) {
     console.log(obj);
     for (x=0;x<5;x++) {
         let weatherIconURL='<img src="http://openweathermap.org/img/wn/'+obj[x].weather[0].icon+'@2x.png">';
-        $('#fore-'+x).html(
-            `
-            <h3>${dayjs.unix(obj[x].dt).format('dddd')}</h3><br>
-            ${weatherIconURL}<br>
-            (${dayjs.unix(obj[x].dt).format('YYYY/MM/DD')})<br>
+        $('#fore-'+x).children(".weather-heather").html(dayjs.unix(obj[x].dt).format('dddd'));
+        $('#fore-'+x).children(".card-body").html(`${dayjs.unix(obj[x].dt).format('DD MMMM')}<br>
+        ${weatherIconURL}<br>
+            
             <h4>${Math.floor(obj[x].main.temp)}</h4><br>
             ${obj[x].wind.speed}<br>
             ${obj[x].main.humidity}<br>   
