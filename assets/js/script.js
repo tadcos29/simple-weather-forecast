@@ -18,7 +18,9 @@ function FetchData(url) {
             if (!pastRecord.includes(data.name)) {
             pastRecord.push(data.name);
             console.log(data.name+"moved into"+pastRecord);
+            WriteCityList(pastRecord);
             UpdateRecords();
+            
         }
             DrawPresent(data);
             FetchForecast(data);
@@ -81,22 +83,28 @@ function DrawPresent(cityData) {
 $('#current-weather').html(
     `
     <h2>${cityData.name}(${dayjs.unix(cityData.dt).format('YYYY/MM/DD')})</h2><br>
-    <h3>${Math.floor(cityData.main.temp)}</h3><br>${weatherIconURL}<br>${cityData.wind.speed}m/s<br>
+    Last weather update:${dayjs.unix(cityData.dt).format('HH:mm')}<br>
+    ${weatherIconURL}<br>
+    <h3>${Math.floor(cityData.main.temp)}</h3><br>
+    ${cityData.wind.speed}m/s<br>
     ${cityData.main.humidity}%<br>
-    `
-    );
+    `);
 
 }
 
 function DrawForecast(obj) {
     console.log(obj);
     for (x=0;x<5;x++) {
+        let weatherIconURL='<img src="http://openweathermap.org/img/wn/'+obj[x].weather[0].icon+'@2x.png">';
         $('#fore-'+x).html(
-            
-            "<h3>"+dayjs.unix(obj[x].dt).format('dddd')+"</h3><br>("+dayjs.unix(obj[x].dt).format('YYYY/MM/DD')+")<br>"
-    +"<h4>"+Math.floor(obj[x].main.temp)+"</h4>"
-            
-            );
+            `
+            <h3>${dayjs.unix(obj[x].dt).format('dddd')}</h3><br>
+            ${weatherIconURL}<br>
+            (${dayjs.unix(obj[x].dt).format('YYYY/MM/DD')})<br>
+            <h4>${Math.floor(obj[x].main.temp)}</h4><br>
+            ${obj[x].wind.speed}<br>
+            ${obj[x].main.humidity}<br>   
+    `);
         console.log("For assurance's sake, drawforecast: "+$('#fore-'+x)+" "+obj[x].dt);
     }
 
@@ -118,7 +126,7 @@ function DrawForecast(obj) {
 // }
 
 
-function ProcessResponse(event) {
+function ProcessCitySubmitResponse(event) {
   // Prevent default action
   event.preventDefault();
   if (event.target=$("#submitBtn")) {
@@ -129,7 +137,7 @@ function ProcessResponse(event) {
   FetchData('https://api.openweathermap.org/data/2.5/weather?q='+cityTextEl.value+'&units=metric&APPID=e8cc868ce9babe028d23c742ce866cec');
   }
 } 
-function ProcessListResponse(event) {
+function ProcessListClickResponse(event) {
     // Prevent default action
     event.preventDefault();
     if (event.target=$(".past-record")) {
@@ -151,8 +159,24 @@ function UpdateRecords() {
     $(cityListEl).children("li").addClass("list-group-item past-record");
 }
 
-submitBtnEl.addEventListener("click", ProcessResponse);
-cityListEl.addEventListener("click", ProcessListResponse);
+function WriteCityList(objList) {
+    localStorage.setItem("tadcos29-weather-list", JSON.stringify(objList));
+  }
+
+function RetrieveCityList() {
+    let objTemp={};
+    objTemp=JSON.parse(localStorage.getItem("tadcos29-weather-list"));
+    //If there are scores in local storage, retrieve them, otherwise return empty array.
+if (objTemp) {return objTemp;} else {return []}
+}
+
+
+
+// Code executes here.
+pastRecord=RetrieveCityList();
+UpdateRecords();
+submitBtnEl.addEventListener("click", ProcessCitySubmitResponse);
+cityListEl.addEventListener("click", ProcessListClickResponse);
 
 
 })
