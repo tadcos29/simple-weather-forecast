@@ -24,7 +24,7 @@ function FetchData(url) {
             FetchForecast(data);
             });
         } else {
-          alert('An error has occurred:'+response.statusText);
+          alert('An error has occurred: '+response.statusText);
           return;
         }
       });
@@ -41,14 +41,12 @@ function FetchForecast(cityData) {
             response.json().then(function (data) {
                 //What is the latest available daytime hour on the fifth day?
                 let hourPick=dayjs.unix((data.list[data.list.length-1].dt)).format('HH');
-                console.log(hourPick);
                 // Try to get the 1pm daytime forecast for each day,
                 // otherwise settle for the latest available hour before 1pm.
                 if (hourPick>13) {hourPick=13}
                 // Get all the 3-hourly forecasts in reverse order, starting from the
                 // future-most one.
                 for (x=data.list.length-1;x>=0;x--) {
-                    // console.log(data.list[x].dt);
                     let iterHour=dayjs.unix((data.list[x].dt)).format('HH')
                     // If the hour is the desired hour (1pm ideally, as above) then
                     // extract the forecast associated with it into the objFuture object.
@@ -57,8 +55,6 @@ function FetchForecast(cityData) {
                     // console.log(dayjs.unix((data.list[x].dt)).format('YYYY-ddd-MM-DD-HH'));
                     
                 }
-                console.log("And now, hopefully, the one-o-clocks");
-                console.log(dayjs.unix(objFuture[0].dt).format('YYYY-ddd-MM-DD-HH'));
                 //Reverse the five forecasts thus obtained into correct order.
                 objFuture=objFuture.reverse();
                 // Draw the forecasts to UI.
@@ -102,7 +98,6 @@ function DrawForecast(obj) {
             <b>Wind: </b>${Math.floor(obj[x].wind.speed*3.6)} km/s<br>
             <b>Humidity: </b>${obj[x].main.humidity}%<br>   
     `);
-        console.log("For assurance's sake, drawforecast: "+$('#fore-'+x)+" "+obj[x].dt);
     }
 
 
@@ -114,12 +109,8 @@ function DrawForecast(obj) {
 function ProcessCitySubmitResponse(event) {
   // Prevent default action
   event.preventDefault();
-  console.log(event.target);
   if ($(event.target).attr('id')=='submitBtn') {
   
-  console.log("this is"+$(this));
-  console.log(cityTextEl);
-  console.log("I got "+cityTextEl.value);
   FetchData('https://api.openweathermap.org/data/2.5/weather?q='+cityTextEl.value+'&units=metric&APPID=e8cc868ce9babe028d23c742ce866cec');
   
 }
@@ -159,7 +150,8 @@ function UpdateRecords() {
     $(cityListEl).children("li").addClass("list-group-item past-record bg-dark text-white m-1");
 
 }
-
+// Local storage functions.
+    
 function WriteCityList(objList) {
     localStorage.setItem("tadcos29-weather-list", JSON.stringify(objList));
   }
@@ -176,11 +168,8 @@ if (objTemp) {return objTemp;} else {return []}
 // Code executes here.
 pastRecord=RetrieveCityList();
 UpdateRecords();
-
-// submitBtnEl.addEventListener("click", ProcessCitySubmitResponse);
 $('#submitBtn').click(ProcessCitySubmitResponse);
 $('#city-list-proper').click(ProcessListClickResponse);
-// cityListEl.addEventListener("click", ProcessListClickResponse);
 
 
 })
