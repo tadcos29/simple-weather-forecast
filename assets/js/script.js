@@ -32,7 +32,6 @@ function FetchData(url) {
 }
 
 function FetchForecast(cityData) {
-    console.log(cityData);
     let objFuture=[];
     let lat=cityData.coord.lat;
     let lon=cityData.coord.lon; //refactor later
@@ -85,27 +84,11 @@ function DrawPresent(cityData) {
     <h2>${dayjs.unix(cityData.dt).format('dddd, DD MMMM, YYYY')}</h2> Last weather update: ${dayjs.unix(cityData.dt).format('HH:mm')}<br>
     ${weatherIconURL}<br>
     <h3>${Math.floor(cityData.main.temp)}°C</h3><br>
-    ${Math.floor(cityData.wind.speed*3.6)}km/s<br>
-    ${cityData.main.humidity}%<br>
+    <b>Wind: </b>${Math.floor(cityData.wind.speed*3.6)}km/s<br>
+    <b>Humidity: </b>${cityData.main.humidity}%<br>
     `);
 
 }
-
-// function DrawForecast(obj) {
-//     console.log(obj);
-//     for (x=0;x<5;x++) {
-//         let weatherIconURL='<img src="http://openweathermap.org/img/wn/'+obj[x].weather[0].icon+'@2x.png">';
-//         $('#fore-'+x).html(
-//             `
-//             <h3>${dayjs.unix(obj[x].dt).format('dddd')}</h3><br>
-//             ${weatherIconURL}<br>
-//             (${dayjs.unix(obj[x].dt).format('YYYY/MM/DD')})<br>
-//             <h4>${Math.floor(obj[x].main.temp)}</h4><br>
-//             ${obj[x].wind.speed}<br>
-//             ${obj[x].main.humidity}<br>   
-//     `);
-//         console.log("For assurance's sake, drawforecast: "+$('#fore-'+x)+" "+obj[x].dt);
-//     }
 
 function DrawForecast(obj) {
     console.log(obj);
@@ -116,8 +99,8 @@ function DrawForecast(obj) {
         ${weatherIconURL}<br>
             
             <h4>${Math.floor(obj[x].main.temp)}°C</h4><br>
-            ${Math.floor(obj[x].wind.speed*3.6)} km/s<br>
-            ${obj[x].main.humidity}%<br>   
+            <b>Wind: </b>${Math.floor(obj[x].wind.speed*3.6)} km/s<br>
+            <b>Humidity: </b>${obj[x].main.humidity}%<br>   
     `);
         console.log("For assurance's sake, drawforecast: "+$('#fore-'+x)+" "+obj[x].dt);
     }
@@ -127,18 +110,6 @@ function DrawForecast(obj) {
 
 
 }
-
-
-// let submitBtnEl=document.querySelector("#submitBtn");
-
-// submitBtnEl.addEventListener("click", {
-//     event.preventDefault();
-//     // console.log("this is"+$(this));
-//     // console.log($("#city-text-field"));
-//     // console.log("I got "+$("#city-text-field").value);
-//   //  FetchData('https://api.openweathermap.org/data/2.5/weather?q='+$(".city-text-field").val()+'&APPID=e8cc868ce9babe028d23c742ce866cec');
-// }
-
 
 function ProcessCitySubmitResponse(event) {
   // Prevent default action
@@ -171,6 +142,16 @@ function ProcessListClickResponse(event) {
 
 function UpdateRecords() {
     cityListEl.innerHTML='';
+    if (pastRecord.length===0) {
+        $('.forecast-cards').hide();
+        $('.card').hide();
+        $('.intervening').hide();
+    } else {
+        $('.forecast-cards').show();
+        $('.card').show();
+        $('.intervening').show();
+
+    }
     for (x=0;x<pastRecord.length;x++) {
         $("<li>"+pastRecord[x]+"</li>").appendTo(cityListEl);
         
@@ -194,11 +175,12 @@ if (objTemp) {return objTemp;} else {return []}
 
 // Code executes here.
 pastRecord=RetrieveCityList();
-// add basic check for null saves, do a central prompt
 UpdateRecords();
+
 // submitBtnEl.addEventListener("click", ProcessCitySubmitResponse);
 $('#submitBtn').click(ProcessCitySubmitResponse);
-cityListEl.addEventListener("click", ProcessListClickResponse);
+$('#city-list-proper').click(ProcessListClickResponse);
+// cityListEl.addEventListener("click", ProcessListClickResponse);
 
 
 })
