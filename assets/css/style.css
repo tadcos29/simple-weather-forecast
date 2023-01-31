@@ -1,11 +1,73 @@
-#submitBtn:hover {
-    background-color: white !important;
+:root {
+    --main-bg:rgb(238, 228, 248);
+    --main-font-color: rgb(145, 56, 163);
+    --board-color: #d2bee7;
+    --header-bg: #AD8fcc;
+    --header-text: #fcf9ef;
+    }
+    /* background-color:black; color:white;  */
+body {
+    background-color: var(--board-color);
+}
+#submitBtn:hover, .past-record:hover {
+    cursor:pointer;
+    background-color: lightgray !important;
     color:black !important;
 
 }
+
+header {
+    display:flex;
+    justify-content: center;
+    background-color: var(--header-bg);
+}
+
+.intervening, .city-name-header, .card-header {
+    background-color:var(--main-font-color) !important;
+    color: var(--header-text) !important;
+}
 h1 {
-    color:red;
+    color:var(--header-text);
 }
-.past-record:hover{
-    cursor:pointer;
+
+
+
+.weather-card {
+    max-width:100%;
+
+
 }
+.weather-card .card-body {
+    background-color: var(--main-bg);
+}
+.wcc {
+    max-width:18%;
+
+
+}
+
+
+@media (max-width: 994px) {
+    * {
+      font-size: 13px;
+    }
+   
+
+ 
+
+    .card-body {
+        text-align: center;
+    }
+  
+  }
+  
+  @media (max-width: 766px) {
+
+    .weather-card {
+        max-width:50vw;
+    
+    }
+    .wcc { padding-left: 15%; 
+        max-width:none;
+        }
+  }

@@ -24,7 +24,7 @@ function FetchData(url) {
             FetchForecast(data);
             });
         } else {
-          alert('Something went wrong? :'+response.statusText);
+          alert('An error has occurred:'+response.statusText);
           return;
         }
       });
@@ -77,9 +77,11 @@ function FetchForecast(cityData) {
 function DrawPresent(cityData) {
     console.log("weather"+cityData.dt);
     let weatherIconURL='<img src="http://openweathermap.org/img/wn/'+cityData.weather[0].icon+'@2x.png">';
-$('#current-weather').html(
+    // Generate html for the current weather container based on
+    // cityData weather object passed to the function.
+    $('#current-weather').html(
     `
-    <h1 style="background-color:black; color:white; padding:1%">${cityData.name}</h1>
+    <h1 class="city-name-header" style="padding:1%">${cityData.name}</h1>
     <h2>${dayjs.unix(cityData.dt).format('dddd, DD MMMM, YYYY')}</h2> Last weather update: ${dayjs.unix(cityData.dt).format('HH:mm')}<br>
     ${weatherIconURL}<br>
     <h3>${Math.floor(cityData.main.temp)}°C</h3><br>
@@ -141,7 +143,7 @@ function DrawForecast(obj) {
 function ProcessCitySubmitResponse(event) {
   // Prevent default action
   event.preventDefault();
-  console.log(event.target);.
+  console.log(event.target);
   if ($(event.target).attr('id')=='submitBtn') {
   
   console.log("this is"+$(this));
@@ -194,7 +196,8 @@ if (objTemp) {return objTemp;} else {return []}
 pastRecord=RetrieveCityList();
 // add basic check for null saves, do a central prompt
 UpdateRecords();
-submitBtnEl.addEventListener("click", ProcessCitySubmitResponse);
+// submitBtnEl.addEventListener("click", ProcessCitySubmitResponse);
+$('#submitBtn').click(ProcessCitySubmitResponse);
 cityListEl.addEventListener("click", ProcessListClickResponse);
 
 
