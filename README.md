@@ -1,4 +1,4 @@
-# Work Day Scheduler (Bootcamp Challenge 6)
+# Simple Weather Forecast (Bootcamp Challenge 6)
 
 ## Introduction and Purpose:
 
