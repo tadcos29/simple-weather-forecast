@@ -14,7 +14,7 @@ The application accesses weather data from the OpenWeatherMap API, using a query
 
 ## Results:
 
-![image](./assets/img/SimpleWeather.png)
+![image](./assets/SimpleWeather.png)
 
 
 The application is currently live on [GitHub Pages](https://tadcos29.github.io/simple-weather-forecast/) 
