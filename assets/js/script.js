@@ -12,10 +12,7 @@ function FetchData(url) {
 
     fetch(url).then(function (response) {
         if (response.ok) {
-            console.log ('Current Weather')
-            console.log(response);
             response.json().then(function (data) {
-            console.log(data);
             if (!pastRecord.includes(data.name)) {
             pastRecord.push(data.name);
             WriteCityList(pastRecord);
@@ -38,17 +35,12 @@ function FetchForecast(cityData) {
     let lon=cityData.coord.lon; //refactor later
     fetch('https://api.openweathermap.org/data/2.5/forecast?lat='+lat+'&lon='+lon+'&units=metric&appid='+weatherAPIKey).then(function (response) {
         if (response.ok) {
-            console.log('Future forecast')
-            console.log(`lat is ${lat} and lon is ${lon}`)
-            
-            response.json().then(function (data) {
-                console.log(data.list);
-                console.log('data-in')
+          response.json().then(function (data) {
+      
                 //What is the latest available daytime hour on the fifth day?
                 let hourPick=dayjs.unix((data.list[data.list.length-1].dt)).format('HH');
                 // Try to get the 1pm daytime forecast for each day,
                 // otherwise settle for the latest available hour before 1pm.
-                console.log(hourPick);
                 if (hourPick>13) {hourPick=hourPick-(Math.floor((hourPick % 13)/3)+1)*3}
                 
                 // Get all the 3-hourly forecasts in reverse order, starting from the
@@ -57,7 +49,6 @@ function FetchForecast(cityData) {
                     let iterHour=dayjs.unix((data.list[x].dt)).format('HH')
                     // If the hour is the desired hour (1pm ideally, as above) then
                     // extract the forecast associated with it into the objFuture object.
-                    console.log(`dataListX - ${data.list[x]}, iterHour - ${iterHour}`)
                     if (iterHour==hourPick) {objFuture.push(data.list[x])}
 
                   //  console.log(dayjs.unix((data.list[x].dt)).format('YYYY-ddd-MM-DD-HH'));
@@ -66,7 +57,6 @@ function FetchForecast(cityData) {
                 //Reverse the five forecasts thus obtained into correct order.
                 objFuture=objFuture.reverse();
                 // Draw the forecasts to UI.
-                console.log(`objFuture: ${objFuture}`)
                 DrawForecast(objFuture);
             });
         } else {
@@ -105,7 +95,8 @@ function DrawForecast(obj) {
             
             <h4>${Math.floor(obj[x].main.temp)}°C</h4><br>
             <b>Wind: </b>${Math.floor(obj[x].wind.speed*3.6)} km/s<br>
-            <b>Humidity: </b>${obj[x].main.humidity}%<br>   
+            <b>Humidity: </b>${obj[x].main.humidity}%<br>
+            <b>Precipitation: </b>${obj[x].pop*100}%<br>  
     `);
     }
 
@@ -127,13 +118,10 @@ function ProcessCitySubmitResponse(event) {
 function ProcessListClickResponse(event) {
     // Prevent default action
     event.preventDefault();
-    console.log(event.target);
     //   Since event is delegated, check whether the event caller is actually one of the list items
     // with the past-record class.
     if ($(event.target).hasClass('past-record')) {
    
-    console.log("PAST RECORD"+event.target.innerHTML);
-    console.log("I got "+event.target.innerHTML);
     FetchData('https://api.openweathermap.org/data/2.5/weather?q='+event.target.innerHTML+'&units=metric&APPID=e8cc868ce9babe028d23c742ce866cec');
   
   } 
