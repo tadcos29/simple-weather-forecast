@@ -96,7 +96,7 @@ function DrawForecast(obj) {
             <h4>${Math.floor(obj[x].main.temp)}°C</h4><br>
             <b>Wind: </b>${Math.floor(obj[x].wind.speed*3.6)} km/s<br>
             <b>Humidity: </b>${obj[x].main.humidity}%<br>
-            <b>Precipitation: </b>${obj[x].pop*100}%<br>  
+            <b>Precipitation: </b>${Math.ceil(obj[x].pop*100)}%<br>  
     `);
     }
 
