@@ -29,6 +29,7 @@ function FetchData(url) {
 
 }
 
+
 function FetchForecast(cityData) {
     let objFuture=[];
     let lat=cityData.coord.lat;
@@ -38,15 +39,17 @@ function FetchForecast(cityData) {
           response.json().then(function (data) {
       
                 //What is the latest available daytime hour on the fifth day?
-                let hourPick=dayjs.unix((data.list[data.list.length-1].dt)).format('HH');
+                let hourPick=parseInt(dayjs.utc((data.list[data.list.length-1].dt+data.city.timezone)*1000).format('HH'));
+                console.log('interesting');
+                console.log(parseInt(dayjs.utc((data.list[data.list.length-1].dt+data.city.timezone)*1000).format('HH')));
                 // Try to get the 1pm daytime forecast for each day,
                 // otherwise settle for the latest available hour before 1pm.
-                if (hourPick>13) {hourPick=hourPick-(Math.floor((hourPick % 13)/3)+1)*3}
-                
+                if (hourPick > 13) {hourPick=hourPick-(Math.floor((hourPick % 13)/3)+1)*3}
+                console.log(hourPick);
                 // Get all the 3-hourly forecasts in reverse order, starting from the
                 // future-most one.
                 for (x=data.list.length-1;x>=0;x--) {
-                    let iterHour=dayjs.unix((data.list[x].dt)).format('HH')
+                    let iterHour=dayjs.utc((data.list[x].dt+data.city.timezone)*1000).format('HH')
                     // If the hour is the desired hour (1pm ideally, as above) then
                     // extract the forecast associated with it into the objFuture object.
                     if (iterHour==hourPick) {objFuture.push(data.list[x])}
@@ -57,7 +60,7 @@ function FetchForecast(cityData) {
                 //Reverse the five forecasts thus obtained into correct order.
                 objFuture=objFuture.reverse();
                 // Draw the forecasts to UI.
-                DrawForecast(objFuture);
+                DrawForecast(objFuture, data.city.timezone);
             });
         } else {
           alert('An error has occurred: '+response.statusText);
@@ -76,7 +79,7 @@ function DrawPresent(cityData) {
     $('#current-weather').html(
     `
     <h1 class="city-name-header" style="padding:1%">${cityData.name}</h1>
-    <h2>${dayjs.unix(cityData.dt).format('dddd, DD MMMM, YYYY')}</h2> Last weather update: ${dayjs.unix(cityData.dt).format('HH:mm')}<br>
+    <h2>${dayjs.unix(cityData.dt).format('dddd, DD MMMM, YYYY')}</h2> Last weather update: ${dayjs.unix(cityData.dt).format('HH:mm')}<br>(Local time: ${dayjs.utc((cityData.dt+cityData.timezone)*1000).format('HH:mm')})<br>
     ${weatherIconURL}<br>
     <h3>${Math.floor(cityData.main.temp)}°C</h3><br>
     <b>Wind: </b>${Math.floor(cityData.wind.speed*3.6)}km/s<br>
@@ -85,12 +88,12 @@ function DrawPresent(cityData) {
 
 }
 
-function DrawForecast(obj) {
+function DrawForecast(obj,tz) {
     console.log(obj);
     for (x=0;x<5;x++) {
         let weatherIconURL='<img src="http://openweathermap.org/img/wn/'+obj[x].weather[0].icon+'@2x.png">';
         $('#fore-'+x).children(".weather-heather").html(dayjs.unix(obj[x].dt).format('dddd'));
-        $('#fore-'+x).children(".card-body").html(`${dayjs.unix(obj[x].dt).format('DD MMMM')}<br>
+        $('#fore-'+x).children(".card-body").html(`${dayjs.unix(obj[x].dt).format('DD MMMM')}<br>(Local time: ${dayjs.utc((obj[x].dt+tz)*1000).format('HH:mm')})<br>
         ${weatherIconURL}<br>
             
             <h4>${Math.floor(obj[x].main.temp)}°C</h4><br>
@@ -156,13 +159,13 @@ function WriteCityList(objList) {
 function RetrieveCityList() {
     let objTemp={};
     objTemp=JSON.parse(localStorage.getItem("tadcos29-weather-list"));
-    //If there are scores in local storage, retrieve them, otherwise return empty array.
+    //If there is a list in local storage, retrieve it, otherwise return empty array.
 if (objTemp) {return objTemp;} else {return []}
 }
 
 
 
-// Code executes here.
+// main
 pastRecord=RetrieveCityList();
 UpdateRecords();
 $('#submitBtn').click(ProcessCitySubmitResponse);
